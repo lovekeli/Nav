@@ -8,8 +8,8 @@
         {
           "groupName": "搜索",
           "items": [
-            { "id": "type-baidu", "name": "<span style='color:#2100E0' class='dark-text'>百度</span>", "url": "https://www.baidu.com/s?wd=", "placeholder": "百度一下，你就知道" },
             { "id": "type-bing", "name": "<span style='color:#007daa'>Bing</span>", "url": "https://cn.bing.com/search?q=", "placeholder": "微软 Bing 搜索" },
+             { "id": "type-baidu", "name": "<span style='color:#2100E0' class='dark-text'>百度</span>", "url": "https://www.baidu.com/s?wd=", "placeholder": "百度一下，你就知道" },
             { "id": "type-google", "name": "<span style='color:#3B83FA'>G</span><span style='color:#F3442C'>o</span><span style='color:#FFC300'>o</span><span style='color:#4696F8'>g</span><span style='color:#2CAB4E'>l</span><span style='color:#F54231'>e</span>", "url": "https://www.google.com/search?q=", "placeholder": "谷歌搜索" },
             { "id": "type-360", "name": "<span style='color:#19b955'>360</span>", "url": "https://www.so.com/s?q=", "placeholder": "360好搜" },
             { "id": "type-sogou", "name": "<span style='color:#ff5943'>搜狗</span>", "url": "https://www.sogou.com/web?query=", "placeholder": "搜狗搜索" },

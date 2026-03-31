@@ -474,6 +474,20 @@
             { "title": "与末API", "url": "https://img-api.ymz.icu/", "description": "高清互联网壁纸聚合地" },
             { "title": "教书先生API", "url": "https://api.oioweb.cn/", "description": "提供免费接口调用平台" }
           ]
+        },
+        {
+          "title":"游戏资源",
+          "items":[
+            {"title":"kenney.nl","url":"https://kenney.nl","description":"提供完整的2D/3D游戏资源包"},
+            {"title":"OpenGameArt","url":"https://opengameart.org","description":"涵盖2D/3D模型、音效、音乐及代码，社区活跃，更新频繁。"},
+            {"title":"Itch.io","url":"https://itch.io/games/platform-web","description":"独立开发者社区，提供免费/付费素材，风格多样（像素、卡通、写实）。"},
+            {"title":"Craftpix.net","url":"https://craftpix.net","description":"高质量2D像素素材（角色动画、场景、UI），部分免费包含动画序列。"},
+            {"title":"Game-Icons.net","url":"https://game-icons.net","description":"4000+免费矢量图标，支持多色选择，适用于技能图标、UI设计。"},
+            {"title":"即时设计资源社区","url":"https://js.design/community?category=design","description":"4000+免费素材，覆盖天气图标、道具、场景插画等，支持在线编辑。"},
+            {"title":"FreeSound.org","url":"https://www.freesound.cn","description":"海量音效（环境音、武器声、UI反馈音），多数为CC0协议。"},
+            {"title":"Sketchfab","url":"https://sketchfab.com","description":"海量3D模型（FBX、OBJ格式），部分免费商用。"},
+            {"title":"Mixamo","url":"https://www.mixamo.com","description":"免费角色模型+自动骨骼绑定，预设动画库丰富。"}
+          ]
         }
       ]
     },

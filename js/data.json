@@ -9,7 +9,6 @@
           "groupName": "搜索",
           "items": [
             { "id": "type-bing", "name": "<span style='color:#007daa'>Bing</span>", "url": "https://cn.bing.com/search?q=", "placeholder": "微软 Bing 搜索" },
-             { "id": "type-baidu", "name": "<span style='color:#2100E0' class='dark-text'>百度</span>", "url": "https://www.baidu.com/s?wd=", "placeholder": "百度一下，你就知道" },
             { "id": "type-google", "name": "<span style='color:#3B83FA'>G</span><span style='color:#F3442C'>o</span><span style='color:#FFC300'>o</span><span style='color:#4696F8'>g</span><span style='color:#2CAB4E'>l</span><span style='color:#F54231'>e</span>", "url": "https://www.google.com/search?q=", "placeholder": "谷歌搜索" },
             { "id": "type-360", "name": "<span style='color:#19b955'>360</span>", "url": "https://www.so.com/s?q=", "placeholder": "360好搜" },
             { "id": "type-sogou", "name": "<span style='color:#ff5943'>搜狗</span>", "url": "https://www.sogou.com/web?query=", "placeholder": "搜狗搜索" },
@@ -62,6 +61,22 @@
       ]
     },
     {
+      "title": "AI团体",
+      "icon": "ti ti-thought",
+      "items": [
+            { "title": "ChatGPT", "url": "https://chatgpt.com/", "description": "ChatGPT 是由 OpenAI 开发的一种人工智能语言模型，能够根据上下文和过去的对话生成类似人类的文本。" },
+            { "title": "DeepSeek", "url": "https://www.deepseek.com/", "description": "DeepSeek | 深度求索  探索未至之境" },
+            { "title": "Gemini", "url": "https://gemini.google.com/", "description": "Gemini Pro是谷歌最新推出的高性能AI模型，专为编程和复杂任务处理优化。它具备强大的代码生成能力，能够处理复杂指令，并支持最高200万Token的上下文窗口。此外，Gemini Pro可调用Google搜索和代码执行，以增强推理能力和信息获取能力。" },
+            { "title": "Grok 3", "url": "https://x.com/i/grok/", "description": "马斯克旗下重磅AI，人工智能初创公司xAI团队研发的第三代大语言模型。2025年2月18日正式发布，同步发布的还有名为Deepsearch的Grok 3智能搜索引擎。" },
+            { "title": "文心一言", "url": "https://yiyan.baidu.com/", "description": "文心一言是百度研发的知识增强大语言模型，它采用了深度学习算法和大规模语料库训练，具备强大的语义理解和生成能力。文心一言能够与用户进行流畅的对话交流，理解用户的意图和需求，并提供精准、有价值的回答和建议。" },
+            { "title": "通义千问", "url": "https://www.tongyi.com/", "description": "通义千问是阿里巴巴推出的一个AI预训练模型，它主要基于阿里巴巴达摩院在自然语言处理领域的先进技术，采用深度学习和大规模语言模型的方法。通义千问旨在为用户提供高效、准确的信息检索和问题解答服务，同时支持多种自然语言处理任务，如语音识别、机器翻译等。" },
+            { "title": "智谱清言", "url": "https://chatglm.cn/", "description": "智谱清言是由北京智谱华章科技有限公司开发的生成式AI聊天助手，基于智谱AI自主研发的中英双语对话模型ChatGLM2。它具有千亿级别的参数和一系列强大的功能，旨在提供高效、精准的语音交互体验。" },
+            { "title": "豆包", "url": "https://www.doubao.com/chat/", "description": "豆包，一款由字节跳动精心打造的AI助手，它不仅是你的私人问答专家，更是写作、翻译、情感陪伴、编程等多面手。无论是Web端还是iOS/安卓，一键登录（手机号、抖音号、Apple ID任选），即刻开启智能生活新篇章！" },
+            { "title": "天工AI", "url": "https://www.tiangong.cn/", "description": "天工是一款支持搜索、写作、对话、文档分析、画画、做PPT的全能型AI助手。你可以借助AI技术，检索信息、多语言翻译、写论文、写代码、写方案、写汇报、做PPT、归纳总结文档和音频视频，还可以智能编辑彩页和宝典，让AI生成高质量彩页内容，收获点赞关注。" },
+            { "title": "Google AI Studio", "url": "https://aistudio.google.com/", "description": "基于浏览器的轻量级AI平台" }
+      ]
+    },
+    {
       "title": "热搜新闻",
       "icon": "ti ti-flame",
       "items": [
@@ -77,10 +92,7 @@
       "items": [
         { "title": "Youtube", "url": "https://www.youtube.com/", "description": "全球最大的视频分享平台" },
         { "title": "哔哩哔哩", "url": "https://bilibili.com/", "description": "中国版youtube" },
-        { "title": "GitHub", "url": "https://github.com/", "description": "管理软件开发以及发现已有代码的首选方法" },
-        { "title": "ChatGPT", "url": "https://chatgpt.com/", "description": "ChatGPT 是由 OpenAI 开发的一种人工智能语言模型，能够根据上下文和过去的对话生成类似人类的文本。" },
-        { "title": "DeepSeek", "url": "https://www.deepseek.com/", "description": "DeepSeek | 深度求索  探索未至之境" },
-        { "title": "Google AI Studio", "url": "https://aistudio.google.com/", "description": "基于浏览器的轻量级AI平台" }
+        { "title": "GitHub", "url": "https://github.com/", "description": "管理软件开发以及发现已有代码的首选方法" }
       ]
     },
     {
@@ -200,21 +212,6 @@
       "title": "实用工具",
       "icon": "ti ti-tool",
       "children": [
-        {
-          "title": "人工智能",
-          "items": [
-            { "title": "ChatGPT", "url": "https://chatgpt.com/", "description": "ChatGPT 是由 OpenAI 开发的一种人工智能语言模型，能够根据上下文和过去的对话生成类似人类的文本。" },
-            { "title": "DeepSeek", "url": "https://www.deepseek.com/", "description": "DeepSeek | 深度求索  探索未至之境" },
-            { "title": "Gemini", "url": "https://gemini.google.com/", "description": "Gemini Pro是谷歌最新推出的高性能AI模型，专为编程和复杂任务处理优化。它具备强大的代码生成能力，能够处理复杂指令，并支持最高200万Token的上下文窗口。此外，Gemini Pro可调用Google搜索和代码执行，以增强推理能力和信息获取能力。" },
-            { "title": "Grok 3", "url": "https://x.com/i/grok/", "description": "马斯克旗下重磅AI，人工智能初创公司xAI团队研发的第三代大语言模型。2025年2月18日正式发布，同步发布的还有名为Deepsearch的Grok 3智能搜索引擎。" },
-            { "title": "文心一言", "url": "https://yiyan.baidu.com/", "description": "文心一言是百度研发的知识增强大语言模型，它采用了深度学习算法和大规模语料库训练，具备强大的语义理解和生成能力。文心一言能够与用户进行流畅的对话交流，理解用户的意图和需求，并提供精准、有价值的回答和建议。" },
-            { "title": "通义千问", "url": "https://www.tongyi.com/", "description": "通义千问是阿里巴巴推出的一个AI预训练模型，它主要基于阿里巴巴达摩院在自然语言处理领域的先进技术，采用深度学习和大规模语言模型的方法。通义千问旨在为用户提供高效、准确的信息检索和问题解答服务，同时支持多种自然语言处理任务，如语音识别、机器翻译等。" },
-            { "title": "智谱清言", "url": "https://chatglm.cn/", "description": "智谱清言是由北京智谱华章科技有限公司开发的生成式AI聊天助手，基于智谱AI自主研发的中英双语对话模型ChatGLM2。它具有千亿级别的参数和一系列强大的功能，旨在提供高效、精准的语音交互体验。" },
-            { "title": "豆包", "url": "https://www.doubao.com/chat/", "description": "豆包，一款由字节跳动精心打造的AI助手，它不仅是你的私人问答专家，更是写作、翻译、情感陪伴、编程等多面手。无论是Web端还是iOS/安卓，一键登录（手机号、抖音号、Apple ID任选），即刻开启智能生活新篇章！" },
-            { "title": "天工AI", "url": "https://www.tiangong.cn/", "description": "天工是一款支持搜索、写作、对话、文档分析、画画、做PPT的全能型AI助手。你可以借助AI技术，检索信息、多语言翻译、写论文、写代码、写方案、写汇报、做PPT、归纳总结文档和音频视频，还可以智能编辑彩页和宝典，让AI生成高质量彩页内容，收获点赞关注。" },
-            { "title": "Google AI Studio", "url": "https://aistudio.google.com/", "description": "基于浏览器的轻量级AI平台" }
-          ]
-        },
         {
           "title": "在线工具",
           "items": [
@@ -439,6 +436,7 @@
             { "title": "fontawesome", "url": "https://fontawesome.com/", "description": "图标库" },
             { "title": "tabler-icons", "url": "https://tabler-icons.io/", "description": "图标库" },
             { "title": "IconPark", "url": "https://iconpark.oceanengine.com/", "description": "图标库" },
+            { "title": "thetheme", "url": "http://thetheme.io/theadmin/content/icons-themify.html", "description": "图标库" },
             { "title": "ColorGG", "url": "https://www.colorgg.com/", "description": "提供有关颜色信息，颜色搭配，颜色代码查询以及各种颜色空间转换" },
             { "title": "儿童睡前故事", "url": "https://beddystories.com/", "description": "收录十几个国家的睡前故事" }
           ]
@@ -486,7 +484,8 @@
             {"title":"即时设计资源社区","url":"https://js.design/community?category=design","description":"4000+免费素材，覆盖天气图标、道具、场景插画等，支持在线编辑。"},
             {"title":"FreeSound.org","url":"https://www.freesound.cn","description":"海量音效（环境音、武器声、UI反馈音），多数为CC0协议。"},
             {"title":"Sketchfab","url":"https://sketchfab.com","description":"海量3D模型（FBX、OBJ格式），部分免费商用。"},
-            {"title":"Mixamo","url":"https://www.mixamo.com","description":"免费角色模型+自动骨骼绑定，预设动画库丰富。"}
+            {"title":"Mixamo","url":"https://www.mixamo.com","description":"免费角色模型+自动骨骼绑定，预设动画库丰富。"},
+            {"title":"破解游戏","url":"https://byrutgame.org","description":"全球最大的游戏破解平台"}
           ]
         }
       ]

@@ -62,7 +62,7 @@
     },
     {
       "title": "AI团体",
-      "icon": "ti ti-thought",
+      "icon": "ti ti-flame",
       "items": [
             { "title": "ChatGPT", "url": "https://chatgpt.com/", "description": "ChatGPT 是由 OpenAI 开发的一种人工智能语言模型，能够根据上下文和过去的对话生成类似人类的文本。" },
             { "title": "DeepSeek", "url": "https://www.deepseek.com/", "description": "DeepSeek | 深度求索  探索未至之境" },

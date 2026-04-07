@@ -499,7 +499,8 @@ function setupBgImageFallback() {
     if (!bgUrlMatch) return;
     const bgUrl = bgUrlMatch[1];
     const img = new Image();
-    img.src = bgUrl;
+    // img.src = bgUrl;
+    img.src ="https://api.yppp.net/api.php"; //随机二次元图片
     img.onerror = () => {
         body.style.background = '#3f5d5c';
         body.style.backgroundImage = 'none';

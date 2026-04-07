@@ -500,6 +500,7 @@ function setupBgImageFallback() {
     const bgUrl = bgUrlMatch[1];
     const img = new Image();
     img.src = bgUrl;
+
     img.onerror = () => {
         body.style.background = '#3f5d5c';
         body.style.backgroundImage = 'none';

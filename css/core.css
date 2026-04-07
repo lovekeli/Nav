@@ -99,6 +99,7 @@ body {
   font-family: "LXGW WenKai" !important;
 }
 body {
+  background-image: url(https://api.yppp.net/api.php);
   background-repeat: no-repeat;
   background-attachment: fixed;
   background-position: center;

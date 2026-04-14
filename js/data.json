@@ -203,7 +203,10 @@
             { "title": "迷宫生成器", "url": "https://www.mazegenerator.net/", "description": "迷宫生成器" },
             { "title": "流体模拟器", "url": "https://david.li/fluid/", "description": "流体模拟器" },
             { "title": "六十秒冥想", "url": "https://pixelthoughts.co/", "description": "六十秒冥想" },
-            { "title": "经典益智游戏合集", "url": "https://puzzles-game.com/zh/", "description": "包含40款在线益智游戏网站" }
+            { "title": "经典益智游戏合集", "url": "https://puzzles-game.com/zh/", "description": "包含40款在线益智游戏网站" },
+            {"title":"破解游戏","url":"https://byrutgame.org","description":"全球最大的游戏破解平台"},
+            {"title":"DMM","url":"https://www.dmm.com","description":"日本综合网络平台"},
+            {"title":"DLsite","url":"https://www.dlsite.com","description":"日本最大的同人平台"}
           ]
         }
       ]
@@ -484,8 +487,7 @@
             {"title":"即时设计资源社区","url":"https://js.design/community?category=design","description":"4000+免费素材，覆盖天气图标、道具、场景插画等，支持在线编辑。"},
             {"title":"FreeSound.org","url":"https://www.freesound.cn","description":"海量音效（环境音、武器声、UI反馈音），多数为CC0协议。"},
             {"title":"Sketchfab","url":"https://sketchfab.com","description":"海量3D模型（FBX、OBJ格式），部分免费商用。"},
-            {"title":"Mixamo","url":"https://www.mixamo.com","description":"免费角色模型+自动骨骼绑定，预设动画库丰富。"},
-            {"title":"破解游戏","url":"https://byrutgame.org","description":"全球最大的游戏破解平台"}
+            {"title":"Mixamo","url":"https://www.mixamo.com","description":"免费角色模型+自动骨骼绑定，预设动画库丰富。"}
           ]
         }
       ]

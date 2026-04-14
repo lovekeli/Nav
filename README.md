@@ -43,3 +43,6 @@
 - [今日诗词 API](https://www.jinrishici.com/)
 - [新逸Cary API](https://api.xinac.net/)
 - [缙哥哥博客 API](https://www.dujin.org/3618.html)
+
+
+ qwen --resume ae1b55f1-b199-4389-bbe3-d478ed3163b1

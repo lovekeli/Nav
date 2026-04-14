@@ -369,7 +369,7 @@ function renderContent() {
 
         // 点击搜索结果打开链接
         elements.panel.addEventListener('click', (e) => {
-            const resultCard = e.target.closest('.instant-search-card');
+            const resultCard = e.target.closest('.instant-search-result-card');
             if (resultCard && resultCard.dataset.url) {
                 window.open(resultCard.dataset.url, '_blank');
                 elements.input.value = '';

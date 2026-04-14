@@ -137,6 +137,7 @@
         {
           "title": "在线综合",
           "items": [
+            { "title": "Pornhub", "url": "https://pornhub.com/", "description": "最大的成人网站" },
             { "title": "大师兄影视", "url": "https://dsxys.com/", "description": "在线观看,蓝光电影,搞笑视频,美剧,韩剧,超前点播,免费视频" },
             { "title": "3Q影视", "url": "https://qqqys.com/", "description": "专注于影视、综艺、动漫内容的在线资源平台，无需登录即可观看" },
             { "title": "NO视频", "url": "https://findno.tv/", "description": "为用户提供及时的海外热门剧集在线观看，友好无广告，致力于最轻松的追剧体验" },
@@ -206,6 +207,7 @@
             { "title": "经典益智游戏合集", "url": "https://puzzles-game.com/zh/", "description": "包含40款在线益智游戏网站" },
             {"title":"破解游戏","url":"https://byrutgame.org","description":"全球最大的游戏破解平台"},
             {"title":"DMM","url":"https://www.dmm.com","description":"日本综合网络平台"},
+            {"title":"工口实验室","url":"https://www.ero-labs.com/","description":"成人游戏网站"},
             {"title":"DLsite","url":"https://www.dlsite.com","description":"日本最大的同人平台"}
           ]
         }

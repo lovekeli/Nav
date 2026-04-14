@@ -1069,6 +1069,158 @@ footer.main-footer.fixed {
   color: var(--text-color-primary) !important;
 }
 
+/* --- 即时搜索（集成在搜索选项面板中） --- */
+.instant-search-section {
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 1px solid var(--module-border-color);
+}
+
+.instant-search-section .section-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-color-primary);
+  margin-bottom: 15px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.instant-search-section .section-title i {
+  font-size: 16px;
+  color: var(--accent-color);
+}
+
+/* 固定高度可滚动的网格容器 */
+.instant-search-results-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+  gap: 8px;
+  max-height: 340px;
+  overflow-y: auto;
+  padding: 0 5px;
+}
+
+/* 单个搜索结果卡片 */
+.instant-search-result-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 8px;
+  border-radius: 10px;
+  background-color: rgba(255, 255, 255, 0.9);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: center;
+  height: 95px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.instant-search-result-card:hover {
+  background-color: #ffffff;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+}
+
+.instant-search-result-card .search-card-icon {
+  width: 48px !important;
+  height: 48px !important;
+  border-radius: 10px !important;
+  object-fit: contain !important;
+  margin-bottom: 5px !important;
+  flex-shrink: 0 !important;
+}
+
+.instant-search-result-card .search-card-title {
+  font-size: 12px;
+  color: #333;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+  line-height: 1.3;
+  height: 16px;
+}
+
+.instant-search-result-card mark {
+  background-color: rgba(255, 235, 59, 0.4);
+  color: inherit;
+  border-radius: 2px;
+  padding: 0 2px;
+}
+
+.night .instant-search-result-card {
+  background-color: rgba(40, 40, 40, 0.9);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.night .instant-search-result-card:hover {
+  background-color: rgba(50, 50, 50, 1);
+}
+
+.night .instant-search-result-card .search-card-title {
+  color: #e0e0e0;
+}
+
+.night .instant-search-result-card mark {
+  background-color: rgba(255, 193, 7, 0.3);
+}
+
+.instant-search-no-result {
+  text-align: center;
+  padding: 30px 15px;
+  font-size: 14px;
+  color: var(--text-color-secondary);
+}
+
+/* 自定义 Tooltip 样式（Bootstrap Tooltip 覆盖） */
+.tooltip {
+  --bs-tooltip-bg: rgba(255, 255, 255, 0.95) !important;
+  --bs-tooltip-color: #333 !important;
+  --bs-tooltip-border-radius: 8px !important;
+  --bs-tooltip-padding-x: 12px !important;
+  --bs-tooltip-padding-y: 8px !important;
+  --bs-tooltip-font-size: 12px !important;
+  --bs-tooltip-max-width: 250px !important;
+}
+
+.tooltip .tooltip-inner {
+  background-color: rgba(255, 255, 255, 0.95) !important;
+  color: #333 !important;
+  border-radius: 8px !important;
+  padding: 8px 12px !important;
+  font-size: 12px !important;
+  max-width: 250px !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+  border: 1px solid rgba(0, 0, 0, 0.1) !important;
+}
+
+.tooltip.bs-tooltip-top .tooltip-arrow::before {
+  border-top-color: rgba(255, 255, 255, 0.95) !important;
+}
+
+.tooltip.bs-tooltip-bottom .tooltip-arrow::before {
+  border-bottom-color: rgba(255, 255, 255, 0.95) !important;
+}
+
+.night .tooltip .tooltip-inner {
+  background-color: rgba(40, 40, 40, 0.95) !important;
+  color: #e0e0e0 !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+.night .tooltip.bs-tooltip-top .tooltip-arrow::before {
+  border-top-color: rgba(40, 40, 40, 0.95) !important;
+}
+
+.night .tooltip.bs-tooltip-bottom .tooltip-arrow::before {
+  border-bottom-color: rgba(40, 40, 40, 0.95) !important;
+}
+
 /* ---悬浮窗--- */
 .suspension {
   position: fixed;

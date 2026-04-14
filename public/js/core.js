@@ -50,7 +50,7 @@ function renderContent() {
             renderMainMenu(data.pageData);
             renderBookmarkCategories(data.pageData);
             renderSearchSection(searchConfig);
-            attachSearchEventListeners(searchConfig);
+            attachSearchEventListeners(searchConfig, data.pageData);
 
             // 初始化第三方插件(lozad, bootstrap tooltips)以及侧边栏动画
             initializePlugins();
@@ -172,7 +172,7 @@ function renderContent() {
         contentContainer.innerHTML = allContentHTML;
     }
 
-    function attachSearchEventListeners(searchConfig) {
+    function attachSearchEventListeners(searchConfig, pageData) {
         const elements = {
             form: document.getElementById('super-search-fm'),
             container: document.getElementById('search-container'),
@@ -248,6 +248,135 @@ function renderContent() {
             if (query) {
                 const url = `${elements.form.action}${encodeURIComponent(query)}`;
                 window.open(url, '_blank');
+            }
+        });
+
+        // --- 即时搜索逻辑（集成在搜索选项面板中） ---
+        // 收集所有带 items 的数据
+        const allSites = [];
+        pageData.forEach(item => {
+            if (item.items && item.items.length > 0) {
+                item.items.forEach(site => {
+                    allSites.push(site);
+                });
+            }
+            if (item.children) {
+                item.children.forEach(child => {
+                    if (child.items) {
+                        child.items.forEach(site => {
+                            allSites.push(site);
+                        });
+                    }
+                });
+            }
+        });
+
+        // 高亮关键词
+        function highlightText(text, keyword) {
+            if (!keyword) return text;
+            const escaped = keyword.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            const regex = new RegExp(`(${escaped})`, 'gi');
+            return text.replace(regex, '<mark>$1</mark>');
+        }
+
+        // 获取或创建即时搜索区域
+        function getOrCreateInstantSearchSection() {
+            let section = elements.panel.querySelector('.instant-search-section');
+            if (!section) {
+                section = document.createElement('div');
+                section.className = 'instant-search-section';
+                elements.panel.appendChild(section);
+            }
+            return section;
+        }
+
+        // 渲染即时搜索结果
+        let instantSearchDebounce = null;
+        function renderInstantSearch(keyword) {
+            const section = getOrCreateInstantSearchSection();
+
+            if (!keyword || keyword.trim() === '') {
+                section.style.display = 'none';
+                return;
+            }
+
+            const lowerKeyword = keyword.toLowerCase();
+            const filtered = allSites.filter(site => {
+                const title = (site.title || '').toLowerCase();
+                const url = (site.url || '').toLowerCase();
+                const description = (site.description || '').toLowerCase();
+                return title.includes(lowerKeyword) || url.includes(lowerKeyword) || description.includes(lowerKeyword);
+            });
+
+            if (filtered.length === 0) {
+                section.innerHTML = `
+                    <div class="section-title"><i class="ti ti-search"></i> 搜索结果</div>
+                    <div class="instant-search-no-result">未找到匹配的网站</div>
+                `;
+                section.style.display = 'block';
+                return;
+            }
+
+            const resultsHTML = filtered.map(site => {
+                let faviconUrl = 'images/browser.svg';
+                try {
+                    const hostname = new URL(site.url).hostname;
+                    faviconUrl = `https://api.xinac.net/icon/?url=${hostname}`;
+                } catch (e) { /* 忽略 */ }
+
+                const titleHtml = highlightText(site.title || '', keyword);
+                const descHtml = site.description || '';
+
+                return `
+                    <div class="instant-search-result-card" data-url="${site.url}" data-bs-toggle="tooltip" data-bs-placement="top" title="${descHtml}">
+                        <img class="search-card-icon" src="${faviconUrl}" onerror="this.onerror=null;this.src='images/browser.svg';" alt="">
+                        <div class="search-card-title">${titleHtml}</div>
+                    </div>
+                `;
+            }).join('');
+
+            section.innerHTML = `
+                <div class="section-title"><i class="ti ti-search"></i> 搜索结果 (${filtered.length})</div>
+                <div class="instant-search-results-grid">${resultsHTML}</div>
+            `;
+            section.style.display = 'block';
+
+            // 初始化新渲染的 Tooltip
+            if (typeof bootstrap !== 'undefined') {
+                const tooltipTriggerList = section.querySelectorAll('[data-bs-toggle="tooltip"]');
+                tooltipTriggerList.forEach(tooltipTriggerEl => {
+                    // 先销毁已有的 tooltip
+                    const existingTooltip = bootstrap.Tooltip.getInstance(tooltipTriggerEl);
+                    if (existingTooltip) existingTooltip.dispose();
+                    new bootstrap.Tooltip(tooltipTriggerEl);
+                });
+            }
+        }
+
+        // 监听搜索输入
+        elements.input.addEventListener('input', function() {
+            const keyword = this.value.trim();
+            clearTimeout(instantSearchDebounce);
+            instantSearchDebounce = setTimeout(() => {
+                renderInstantSearch(keyword);
+                // 如果有搜索内容，自动展开面板
+                if (keyword) {
+                    elements.panel.classList.add('active');
+                    elements.bar.classList.add('focused');
+                }
+            }, 150);
+        });
+
+        // 点击搜索结果打开链接
+        elements.panel.addEventListener('click', (e) => {
+            const resultCard = e.target.closest('.instant-search-card');
+            if (resultCard && resultCard.dataset.url) {
+                window.open(resultCard.dataset.url, '_blank');
+                elements.input.value = '';
+                const section = elements.panel.querySelector('.instant-search-section');
+                if (section) section.style.display = 'none';
+                elements.panel.classList.remove('active');
+                elements.bar.classList.remove('focused');
             }
         });
 

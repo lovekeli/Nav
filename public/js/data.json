@@ -107,7 +107,9 @@
             { "title": "熊猫搜书", "url": "https://xmsoushu.com/", "description": "熊猫搜书平台，提供免费电子书下载，mobi、epud、pdf、txt格式，kindle电子书下载" },
             { "title": "SoBooks", "url": "https://sobooks.net/", "description": "小说书籍资源搜索" },
             { "title": "搬书匠", "url": "http://www.banshujiang.cn/", "description": "计算机类图书" },
+            { "title": "魔笔小说", "url": "https://www.mobinovels.com/", "description": "二次元轻小说" },
             { "title": "鸠摩搜索", "url": "https://www.jiumodiary.com/", "description": "图书搜索" }
+
           ]
         },
         {

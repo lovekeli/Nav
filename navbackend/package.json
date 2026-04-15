@@ -1,0 +1,18 @@
+{
+  "name": "navbackend",
+  "version": "1.0.0",
+  "description": "导航网站后台管理 - Cloudflare Workers + D1",
+  "main": "src/index.ts",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "db:create": "wrangler d1 create nav-database",
+    "db:migrate": "wrangler d1 execute nav-database --file=./sql/init.sql",
+    "db:migrate:local": "wrangler d1 execute nav-database --file=./sql/init.sql --local"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20240117.0",
+    "typescript": "^5.3.3",
+    "wrangler": "^3.24.0"
+  }
+}

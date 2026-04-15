@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>导航网站后台管理</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif; }
+    :root { --primary: #409eff; --sidebar: #2f4050; --sidebar-hover: #293846; --text: #333; --bg: #f3f3f4; --card: #fff; --border: #e6e6e6; }
+    .dark-mode { --text: #eee; --bg: #1a1a1a; --card: #2d2d2d; --border: #444; }
+    body { background: var(--bg); color: var(--text); display: flex; height: 100vh; overflow: hidden; }
+    .sidebar { width: 220px; background: var(--sidebar); color: white; height: 100%; position: fixed; left: 0; top: 0; overflow-y: auto; }
+    .logo { padding: 20px; text-align: center; font-size: 18px; font-weight: bold; background: var(--primary); }
+    .menu { list-style: none; margin-top: 10px; }
+    .menu li { padding: 14px 20px; cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 10px; }
+    .menu li:hover, .menu li.active { background: var(--sidebar-hover); border-left: 4px solid var(--primary); }
+    .main { flex: 1; margin-left: 220px; display: flex; flex-direction: column; overflow: hidden; }
+    .header { height: 60px; background: var(--card); border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; padding: 0 20px; }
+    .header-title { font-size: 16px; font-weight: 600; }
+    .header-tools { display: flex; gap: 15px; align-items: center; }
+    .theme-btn { cursor: pointer; font-size: 18px; }
+    .content { flex: 1; padding: 20px; overflow-y: auto; }
+    .page { display: none; }
+    .page.active { display: block; }
+    .card { background: var(--card); border-radius: 8px; padding: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); margin-bottom: 20px; }
+    .card-title { font-size: 16px; font-weight: 600; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid var(--border); }
+    .chart-box { width: 100%; max-width: 500px; height: 350px; margin: 0 auto; }
+    .table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+    .table th, .table td { padding: 12px; text-align: left; border-bottom: 1px solid var(--border); }
+    .table th { background: rgba(64,158,255,0.1); }
+    .btn { padding: 6px 12px; border: none; border-radius: 4px; cursor: pointer; transition: 0.2s; font-size: 13px; }
+    .btn-primary { background: var(--primary); color: white; }
+    .btn-danger { background: #f56c6c; color: white; }
+    .btn-success { background: #67c23a; color: white; }
+    .btn:hover { opacity: 0.85; }
+    .form-group { margin-bottom: 15px; }
+    .form-group label { display: block; margin-bottom: 5px; font-size: 14px; }
+    .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 8px 12px; border: 1px solid var(--border); border-radius: 4px; background: var(--card); color: var(--text); }
+    .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center; }
+    .modal.show { display: flex; }
+    .modal-content { background: var(--card); border-radius: 8px; padding: 25px; width: 90%; max-width: 500px; max-height: 80vh; overflow-y: auto; }
+    .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+    .modal-close { cursor: pointer; font-size: 20px; }
+    .actions { display: flex; gap: 8px; }
+    .badge { padding: 3px 8px; border-radius: 4px; font-size: 12px; }
+    .badge-success { background: #67c23a; color: white; }
+    .badge-danger { background: #f56c6c; color: white; }
+    @media (max-width: 768px) { .sidebar { width: 60px; } .sidebar span, .logo span { display: none; } .main { margin-left: 60px; } .menu li { justify-content: center; padding: 14px 0; } }
+  </style>
+</head>
+<body>
+  <div class="sidebar">
+    <div class="logo"><i class="fa fa-compass"></i> <span>导航后台</span></div>
+    <ul class="menu">
+      <li class="active" data-page="overview"><i class="fa fa-dashboard"></i> <span>概览</span></li>
+      <li data-page="group"><i class="fa fa-th"></i> <span>分组管理</span></li>
+      <li data-page="search"><i class="fa fa-search"></i> <span>搜索管理</span></li>
+      <li data-page="link"><i class="fa fa-link"></i> <span>链接管理</span></li>
+    </ul>
+  </div>
+
+  <div class="main">
+    <div class="header">
+      <div class="header-title" id="page-title">数据概览</div>
+      <div class="header-tools">
+        <button class="btn btn-primary" onclick="exportData()"><i class="fa fa-download"></i> 导出JSON</button>
+        <div class="theme-btn" id="theme-toggle"><i class="fa fa-moon-o"></i></div>
+        <button class="btn btn-danger" onclick="logout()"><i class="fa fa-sign-out"></i> 退出</button>
+      </div>
+    </div>
+
+    <div class="content">
+      <!-- 概览页 -->
+      <div class="page active" id="overview">
+        <div class="card">
+          <div class="card-title">各分组链接数量统计</div>
+          <div class="chart-box"><canvas id="groupChart"></canvas></div>
+        </div>
+        <div class="card">
+          <div class="card-title">数据统计</div>
+          <div style="display:flex;gap:20px;flex-wrap:wrap;">
+            <div style="flex:1;min-width:150px;padding:15px;background:rgba(64,158,255,0.1);border-radius:8px;text-align:center;">
+              <div style="font-size:24px;font-weight:bold;color:var(--primary);" id="stat-groups">0</div>
+              <div style="font-size:12px;color:var(--text);">分组数量</div>
+            </div>
+            <div style="flex:1;min-width:150px;padding:15px;background:rgba(103,194,58,0.1);border-radius:8px;text-align:center;">
+              <div style="font-size:24px;font-weight:bold;color:#67c23a;" id="stat-links">0</div>
+              <div style="font-size:12px;color:var(--text);">链接总数</div>
+            </div>
+            <div style="flex:1;min-width:150px;padding:15px;background:rgba(230,162,60,0.1);border-radius:8px;text-align:center;">
+              <div style="font-size:24px;font-weight:bold;color:#e6a23c;" id="stat-search">0</div>
+              <div style="font-size:12px;color:var(--text);">搜索配置</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 分组管理 -->
+      <div class="page" id="group">
+        <div class="card">
+          <div class="card-title">分组列表</div>
+          <button class="btn btn-primary" style="margin-bottom:15px" onclick="showGroupModal()"><i class="fa fa-plus"></i> 新增分组</button>
+          <table class="table">
+            <tr><th>ID</th><th>分组名称</th><th>图标</th><th>链接数量</th><th>排序</th><th>操作</th></tr>
+            <tbody id="group-table-body"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- 搜索管理 -->
+      <div class="page" id="search">
+        <div class="card">
+          <div class="card-title">搜索配置</div>
+          <button class="btn btn-primary" style="margin-bottom:15px" onclick="showSearchConfigModal()"><i class="fa fa-plus"></i> 添加配置</button>
+          <table class="table">
+            <tr><th>ID</th><th>配置名称</th><th>引擎数量</th><th>排序</th><th>操作</th></tr>
+            <tbody id="search-table-body"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- 链接管理 -->
+      <div class="page" id="link">
+        <div class="card">
+          <div class="card-title">网站链接管理</div>
+          <button class="btn btn-primary" style="margin-bottom:15px" onclick="showLinkModal()"><i class="fa fa-plus"></i> 添加链接</button>
+          <table class="table">
+            <tr><th>ID</th><th>名称</th><th>网址</th><th>分组</th><th>状态</th><th>操作</th></tr>
+            <tbody id="link-table-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 分组编辑弹窗 -->
+  <div class="modal" id="groupModal">
+    <div class="modal-content">
+      <div class="modal-header"><h3 id="groupModalTitle">新增分组</h3><span class="modal-close" onclick="closeModal('groupModal')">&times;</span></div>
+      <input type="hidden" id="group-id">
+      <div class="form-group"><label>分组名称</label><input type="text" id="group-title" placeholder="请输入分组名称"></div>
+      <div class="form-group"><label>图标类名</label><input type="text" id="group-icon" placeholder="如: ti ti-star"></div>
+      <div class="form-group"><label>排序</label><input type="number" id="group-sort" value="0"></div>
+      <button class="btn btn-primary" onclick="saveGroup()">保存</button>
+    </div>
+  </div>
+
+  <!-- 搜索配置编辑弹窗 -->
+  <div class="modal" id="searchModal">
+    <div class="modal-content">
+      <div class="modal-header"><h3 id="searchModalTitle">添加搜索配置</h3><span class="modal-close" onclick="closeModal('searchModal')">&times;</span></div>
+      <input type="hidden" id="search-id">
+      <div class="form-group"><label>配置名称</label><input type="text" id="search-group-name" placeholder="如: 搜索"></div>
+      <div class="form-group"><label>排序</label><input type="number" id="search-sort" value="0"></div>
+      <button class="btn btn-primary" onclick="saveSearchConfig()">保存</button>
+    </div>
+  </div>
+
+  <!-- 链接编辑弹窗 -->
+  <div class="modal" id="linkModal">
+    <div class="modal-content">
+      <div class="modal-header"><h3 id="linkModalTitle">添加链接</h3><span class="modal-close" onclick="closeModal('linkModal')">&times;</span></div>
+      <input type="hidden" id="link-id">
+      <div class="form-group"><label>链接名称</label><input type="text" id="link-title" placeholder="请输入网站名称"></div>
+      <div class="form-group"><label>网址</label><input type="text" id="link-url" placeholder="https://"></div>
+      <div class="form-group"><label>描述</label><textarea id="link-desc" rows="2" placeholder="请输入描述"></textarea></div>
+      <div class="form-group"><label>所属分组</label><select id="link-group"></select></div>
+      <div class="form-group"><label>排序</label><input type="number" id="link-sort" value="0"></div>
+      <div class="form-group"><label>状态</label><select id="link-status"><option value="1">启用</option><option value="0">禁用</option></select></div>
+      <button class="btn btn-primary" onclick="saveLink()">保存</button>
+    </div>
+  </div>
+
+  <script>
+    const API_BASE_URL = 'https://navbackend.1540956703.workers.dev';
+    let authToken = localStorage.getItem('admin_token');
+
+    // 检查登录状态
+    if (!authToken) { window.location.href = 'login.html'; }
+
+    // API 请求封装
+    async function apiRequest(url, method = 'GET', data = null) {
+      const options = {
+        method,
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${authToken}` }
+      };
+      if (data && method !== 'GET') options.body = JSON.stringify(data);
+      
+      const res = await fetch(`${API_BASE_URL}${url}`, options);
+      if (res.status === 401) { localStorage.removeItem('admin_token'); window.location.href = 'login.html'; return; }
+      return res.json();
+    }
+
+    // 页面切换
+    const menuItems = document.querySelectorAll('.menu li');
+    const pages = document.querySelectorAll('.page');
+    const pageTitle = document.getElementById('page-title');
+    const titleMap = { overview: '数据概览', group: '分组管理', search: '搜索管理', link: '链接管理' };
+
+    menuItems.forEach(item => {
+      item.addEventListener('click', () => {
+        menuItems.forEach(li => li.classList.remove('active'));
+        item.classList.add('active');
+        const pageId = item.dataset.page;
+        pages.forEach(page => page.classList.remove('active'));
+        document.getElementById(pageId).classList.add('active');
+        pageTitle.textContent = titleMap[pageId];
+        // 切换页面时刷新数据
+        if (pageId === 'overview') loadOverview();
+        else if (pageId === 'group') loadGroups();
+        else if (pageId === 'search') loadSearchConfigs();
+        else if (pageId === 'link') loadLinks();
+      });
+    });
+
+    // 深色模式
+    const themeToggle = document.getElementById('theme-toggle');
+    themeToggle.addEventListener('click', () => {
+      document.body.classList.toggle('dark-mode');
+      themeToggle.querySelector('i').className = document.body.classList.contains('dark-mode') ? 'fa fa-sun-o' : 'fa fa-moon-o';
+    });
+
+    // 退出登录
+    function logout() { localStorage.removeItem('admin_token'); window.location.href = 'login.html'; }
+
+    // 加载概览数据
+    async function loadOverview() {
+      const data = await apiRequest('/api/overview');
+      if (!data) return;
+      
+      document.getElementById('stat-groups').textContent = data.groups?.length || 0;
+      document.getElementById('stat-links').textContent = data.totalLinks || 0;
+      document.getElementById('stat-search').textContent = data.searchConfigs || 0;
+
+      // 渲染扇形图
+      const ctx = document.getElementById('groupChart').getContext('2d');
+      if (window.groupChartInstance) window.groupChartInstance.destroy();
+      window.groupChartInstance = new Chart(ctx, {
+        type: 'pie',
+        data: {
+          labels: data.groups?.map(g => g.title) || [],
+          datasets: [{
+            data: data.groups?.map(g => g.link_count) || [],
+            backgroundColor: ['#409eff', '#67c23a', '#e6a23c', '#f56c6c', '#909399', '#b37feb', '#36cfc9'],
+            borderWidth: 1
+          }]
+        },
+        options: {
+          responsive: true, maintainAspectRatio: false,
+          plugins: { legend: { position: 'bottom' }, title: { display: true, text: '导航分组数据分布' } }
+        }
+      });
+    }
+
+    // 加载分组列表
+    async function loadGroups() {
+      const res = await apiRequest('/api/groups');
+      const tbody = document.getElementById('group-table-body');
+      tbody.innerHTML = (res.data || []).map(g => `
+        <tr>
+          <td>${g.id}</td><td>${g.title}</td><td>${g.icon}</td><td>${g.link_count}</td><td>${g.sort_order}</td>
+          <td class="actions">
+            <button class="btn btn-primary" onclick="editGroup(${g.id})">编辑</button>
+            <button class="btn btn-danger" onclick="deleteGroup(${g.id})">删除</button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    // 加载搜索配置
+    async function loadSearchConfigs() {
+      const res = await apiRequest('/api/search-configs');
+      const tbody = document.getElementById('search-table-body');
+      tbody.innerHTML = (res.data || []).map(s => `
+        <tr>
+          <td>${s.id}</td><td>${s.group_name}</td><td>${s.engine_count}</td><td>${s.sort_order}</td>
+          <td class="actions">
+            <button class="btn btn-primary" onclick="editSearchConfig(${s.id})">编辑</button>
+            <button class="btn btn-danger" onclick="deleteSearchConfig(${s.id})">删除</button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    // 加载链接列表
+    async function loadLinks() {
+      const res = await apiRequest('/api/links');
+      const groups = await apiRequest('/api/groups');
+      const groupMap = {};
+      (groups.data || []).forEach(g => groupMap[g.id] = g.title);
+      
+      const tbody = document.getElementById('link-table-body');
+      tbody.innerHTML = (res.data || []).map(l => `
+        <tr>
+          <td>${l.id}</td><td>${l.title}</td><td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${l.url}</td>
+          <td>${groupMap[l.group_id] || '-'}</td>
+          <td><span class="badge ${l.status ? 'badge-success' : 'badge-danger'}">${l.status ? '启用' : '禁用'}</span></td>
+          <td class="actions">
+            <button class="btn btn-primary" onclick="editLink(${l.id})">编辑</button>
+            <button class="btn btn-danger" onclick="deleteLink(${l.id})">删除</button>
+          </td>
+        </tr>
+      `).join('');
+
+      // 更新链接表单中的分组选择
+      const select = document.getElementById('link-group');
+      select.innerHTML = (groups.data || []).map(g => `<option value="${g.id}">${g.title}</option>`).join('');
+    }
+
+    // 弹窗控制
+    function showModal(id) { document.getElementById(id).classList.add('show'); }
+    function closeModal(id) { document.getElementById(id).classList.remove('show'); }
+
+    // 分组操作
+    function showGroupModal(id = null) {
+      document.getElementById('groupModalTitle').textContent = id ? '编辑分组' : '新增分组';
+      document.getElementById('group-id').value = '';
+      document.getElementById('group-title').value = '';
+      document.getElementById('group-icon').value = 'ti ti-star';
+      document.getElementById('group-sort').value = 0;
+      showModal('groupModal');
+    }
+    async function editGroup(id) {
+      const res = await apiRequest('/api/groups');
+      const group = (res.data || []).find(g => g.id === id);
+      if (group) {
+        document.getElementById('group-id').value = group.id;
+        document.getElementById('group-title').value = group.title;
+        document.getElementById('group-icon').value = group.icon;
+        document.getElementById('group-sort').value = group.sort_order;
+        document.getElementById('groupModalTitle').textContent = '编辑分组';
+        showModal('groupModal');
+      }
+    }
+    async function saveGroup() {
+      const id = document.getElementById('group-id').value;
+      const data = {
+        title: document.getElementById('group-title').value,
+        icon: document.getElementById('group-icon').value,
+        sort_order: parseInt(document.getElementById('group-sort').value)
+      };
+      const url = id ? `/api/groups/${id}` : '/api/groups';
+      const method = id ? 'PUT' : 'POST';
+      await apiRequest(url, method, data);
+      closeModal('groupModal');
+      loadGroups();
+    }
+    async function deleteGroup(id) {
+      if (!confirm('确定删除该分组？关联的链接也会被删除！')) return;
+      await apiRequest(`/api/groups/${id}`, 'DELETE');
+      loadGroups();
+    }
+
+    // 搜索配置操作
+    function showSearchConfigModal() {
+      document.getElementById('searchModalTitle').textContent = '添加搜索配置';
+      document.getElementById('search-id').value = '';
+      document.getElementById('search-group-name').value = '';
+      document.getElementById('search-sort').value = 0;
+      showModal('searchModal');
+    }
+    async function editSearchConfig(id) {
+      const res = await apiRequest('/api/search-configs');
+      const config = (res.data || []).find(s => s.id === id);
+      if (config) {
+        document.getElementById('search-id').value = config.id;
+        document.getElementById('search-group-name').value = config.group_name;
+        document.getElementById('search-sort').value = config.sort_order;
+        document.getElementById('searchModalTitle').textContent = '编辑搜索配置';
+        showModal('searchModal');
+      }
+    }
+    async function saveSearchConfig() {
+      const id = document.getElementById('search-id').value;
+      const data = {
+        group_name: document.getElementById('search-group-name').value,
+        sort_order: parseInt(document.getElementById('search-sort').value)
+      };
+      const url = id ? `/api/search-configs/${id}` : '/api/search-configs';
+      const method = id ? 'PUT' : 'POST';
+      await apiRequest(url, method, data);
+      closeModal('searchModal');
+      loadSearchConfigs();
+    }
+    async function deleteSearchConfig(id) {
+      if (!confirm('确定删除该搜索配置？')) return;
+      await apiRequest(`/api/search-configs/${id}`, 'DELETE');
+      loadSearchConfigs();
+    }
+
+    // 链接操作
+    function showLinkModal() {
+      document.getElementById('linkModalTitle').textContent = '添加链接';
+      document.getElementById('link-id').value = '';
+      document.getElementById('link-title').value = '';
+      document.getElementById('link-url').value = '';
+      document.getElementById('link-desc').value = '';
+      document.getElementById('link-sort').value = 0;
+      document.getElementById('link-status').value = '1';
+      showModal('linkModal');
+    }
+    async function editLink(id) {
+      const res = await apiRequest('/api/links');
+      const link = (res.data || []).find(l => l.id === id);
+      if (link) {
+        document.getElementById('link-id').value = link.id;
+        document.getElementById('link-title').value = link.title;
+        document.getElementById('link-url').value = link.url;
+        document.getElementById('link-desc').value = link.description || '';
+        document.getElementById('link-sort').value = link.sort_order;
+        document.getElementById('link-status').value = link.status;
+        // 等待分组加载后设置选中项
+        setTimeout(() => { document.getElementById('link-group').value = link.group_id; }, 100);
+        document.getElementById('linkModalTitle').textContent = '编辑链接';
+        showModal('linkModal');
+      }
+    }
+    async function saveLink() {
+      const id = document.getElementById('link-id').value;
+      const data = {
+        group_id: parseInt(document.getElementById('link-group').value),
+        title: document.getElementById('link-title').value,
+        url: document.getElementById('link-url').value,
+        description: document.getElementById('link-desc').value,
+        sort_order: parseInt(document.getElementById('link-sort').value),
+        status: parseInt(document.getElementById('link-status').value)
+      };
+      const url = id ? `/api/links/${id}` : '/api/links';
+      const method = id ? 'PUT' : 'POST';
+      await apiRequest(url, method, data);
+      closeModal('linkModal');
+      loadLinks();
+    }
+    async function deleteLink(id) {
+      if (!confirm('确定删除该链接？')) return;
+      await apiRequest(`/api/links/${id}`, 'DELETE');
+      loadLinks();
+    }
+
+    // 导出数据
+    async function exportData() {
+      const data = await apiRequest('/api/export');
+      if (!data) return;
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'data.json';
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    // 初始化加载
+    loadOverview();
+  </script>
+</body>
+</html>

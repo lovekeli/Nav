@@ -13,7 +13,8 @@
       "Bash(dir *)",
       "Bash(f *)",
       "Bash(do *)",
-      "Bash(copy *)"
+      "Bash(copy *)",
+      "Bash(wrangler *)"
     ]
   },
   "$version": 3

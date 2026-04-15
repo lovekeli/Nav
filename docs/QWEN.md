@@ -48,7 +48,7 @@ Nav/
 │   ├── wechat.jpg          # 微信收款码
 │   ├── browser.svg         # 浏览器图标
 │   ├── navigation.png      # 导航图片
-│   └── wayne.png           # 站点 Logo
+│   └── icon.jpg           # 站点 Logo
 └── .github/
     └── workflows/
         └── release.yml     # GitHub Actions 自动发布工作流

@@ -171,7 +171,7 @@ async function handleUpdateGroup(request: Request, env: Env, id: number): Promis
     await env.DB.prepare(`
       UPDATE groups SET title = ?, icon = ?, sort_order = ?, parent_id = ?, updated_at = datetime('now')
       WHERE id = ?
-    `).bind(title, icon, sort_order, parent_id, id).run();
+    `).bind(title, icon, sort_order, parent_id || null, id).run();
     
     return jsonResponse({ message: '更新成功' });
   } catch (e: any) {

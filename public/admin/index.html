@@ -47,6 +47,8 @@
     .badge { padding: 3px 8px; border-radius: 4px; font-size: 12px; }
     .badge-success { background: #67c23a; color: white; }
     .badge-danger { background: #f56c6c; color: white; }
+    .badge-info { background: #909399; color: white; }
+    .sub-group { background: rgba(64,158,255,0.05); }
     @media (max-width: 768px) { .sidebar { width: 60px; } .sidebar span, .logo span { display: none; } .main { margin-left: 60px; } .menu li { justify-content: center; padding: 14px 0; } }
   </style>
 </head>
@@ -103,7 +105,7 @@
           <div class="card-title">分组列表</div>
           <button class="btn btn-primary" style="margin-bottom:15px" onclick="showGroupModal()"><i class="fa fa-plus"></i> 新增分组</button>
           <table class="table">
-            <tr><th>ID</th><th>分组名称</th><th>图标</th><th>链接数量</th><th>排序</th><th>操作</th></tr>
+            <tr><th>ID</th><th>分组名称</th><th>图标</th><th>父分组</th><th>链接数量</th><th>排序</th><th>操作</th></tr>
             <tbody id="group-table-body"></tbody>
           </table>
         </div>
@@ -142,6 +144,7 @@
       <input type="hidden" id="group-id">
       <div class="form-group"><label>分组名称</label><input type="text" id="group-title" placeholder="请输入分组名称"></div>
       <div class="form-group"><label>图标类名</label><input type="text" id="group-icon" placeholder="如: ti ti-star"></div>
+      <div class="form-group"><label>父分组</label><select id="group-parent"><option value="">无（顶级分组）</option></select></div>
       <div class="form-group"><label>排序</label><input type="number" id="group-sort" value="0"></div>
       <button class="btn btn-primary" onclick="saveGroup()">保存</button>
     </div>
@@ -257,16 +260,26 @@
     // 加载分组列表
     async function loadGroups() {
       const res = await apiRequest('/api/groups');
+      const allGroups = res.data || [];
+      // 创建ID到分组的映射
+      const groupMap = {};
+      allGroups.forEach(g => groupMap[g.id] = g);
+      
       const tbody = document.getElementById('group-table-body');
-      tbody.innerHTML = (res.data || []).map(g => `
-        <tr>
-          <td>${g.id}</td><td>${g.title}</td><td>${g.icon}</td><td>${g.link_count}</td><td>${g.sort_order}</td>
+      tbody.innerHTML = allGroups.map(g => {
+        const parentName = g.parent_id ? (groupMap[g.parent_id]?.title || '-') : '-';
+        const isSub = g.parent_id ? 'sub-group' : '';
+        return `
+        <tr class="${isSub}">
+          <td>${g.id}</td><td>${g.parent_id ? '└─ ' : ''}${g.title}</td><td>${g.icon}</td>
+          <td>${g.parent_id ? '<span class="badge badge-info">' + parentName + '</span>' : '<span class="badge">顶级</span>'}</td>
+          <td>${g.link_count}</td><td>${g.sort_order}</td>
           <td class="actions">
             <button class="btn btn-primary" onclick="editGroup(${g.id})">编辑</button>
             <button class="btn btn-danger" onclick="deleteGroup(${g.id})">删除</button>
           </td>
         </tr>
-      `).join('');
+      `}).join('');
     }
 
     // 加载搜索配置
@@ -304,9 +317,20 @@
         </tr>
       `).join('');
 
-      // 更新链接表单中的分组选择
+      // 更新链接表单中的分组选择（显示层级结构）
       const select = document.getElementById('link-group');
-      select.innerHTML = (groups.data || []).map(g => `<option value="${g.id}">${g.title}</option>`).join('');
+      const topGroups = (groups.data || []).filter(g => !g.parent_id);
+      const childGroups = (groups.data || []).filter(g => g.parent_id);
+      
+      let options = '';
+      topGroups.forEach(g => {
+        const children = childGroups.filter(c => c.parent_id === g.id);
+        options += `<option value="${g.id}">${g.title}</option>`;
+        children.forEach(c => {
+          options += `<option value="${c.id}">└─ ${c.title}</option>`;
+        });
+      });
+      select.innerHTML = options;
     }
 
     // 弹窗控制
@@ -314,14 +338,25 @@
     function closeModal(id) { document.getElementById(id).classList.remove('show'); }
 
     // 分组操作
-    function showGroupModal(id = null) {
+    async function loadParentOptions(excludeId = null) {
+      const res = await apiRequest('/api/groups');
+      const topGroups = (res.data || []).filter(g => !g.parent_id && g.id !== excludeId);
+      const select = document.getElementById('group-parent');
+      select.innerHTML = '<option value="">无（顶级分组）</option>' + 
+        topGroups.map(g => `<option value="${g.id}">${g.title}</option>`).join('');
+    }
+
+    async function showGroupModal(id = null) {
       document.getElementById('groupModalTitle').textContent = id ? '编辑分组' : '新增分组';
       document.getElementById('group-id').value = '';
       document.getElementById('group-title').value = '';
       document.getElementById('group-icon').value = 'ti ti-star';
       document.getElementById('group-sort').value = 0;
+      document.getElementById('group-parent').value = '';
+      await loadParentOptions();
       showModal('groupModal');
     }
+
     async function editGroup(id) {
       const res = await apiRequest('/api/groups');
       const group = (res.data || []).find(g => g.id === id);
@@ -331,24 +366,32 @@
         document.getElementById('group-icon').value = group.icon;
         document.getElementById('group-sort').value = group.sort_order;
         document.getElementById('groupModalTitle').textContent = '编辑分组';
+        // 加载父分组选项（排除自己和自己的子分组）
+        await loadParentOptions(id);
+        document.getElementById('group-parent').value = group.parent_id || '';
         showModal('groupModal');
       }
     }
+
     async function saveGroup() {
       const id = document.getElementById('group-id').value;
+      const parentIdVal = document.getElementById('group-parent').value;
       const data = {
         title: document.getElementById('group-title').value,
         icon: document.getElementById('group-icon').value,
-        sort_order: parseInt(document.getElementById('group-sort').value)
+        sort_order: parseInt(document.getElementById('group-sort').value),
+        parent_id: parentIdVal ? parseInt(parentIdVal) : null
       };
       const url = id ? `/api/groups/${id}` : '/api/groups';
       const method = id ? 'PUT' : 'POST';
-      await apiRequest(url, method, data);
+      const result = await apiRequest(url, method, data);
+      if (result.error) { alert(result.error); return; }
       closeModal('groupModal');
       loadGroups();
     }
+
     async function deleteGroup(id) {
-      if (!confirm('确定删除该分组？关联的链接也会被删除！')) return;
+      if (!confirm('确定删除该分组？关联的子分组和链接也会被删除！')) return;
       await apiRequest(`/api/groups/${id}`, 'DELETE');
       loadGroups();
     }

@@ -16,6 +16,10 @@ const public_vars = {
     lastBreakpoint: null
 };
 
+// API 配置
+const API_BASE_URL = 'https://navbackend.1540956703.workers.dev';  // 后端 API 地址
+// const API_BASE_URL = 'http://localhost:8787';  // 本地开发用
+
 // 主执行函数：等待 DOM 加载完毕后运行所有逻辑
 document.addEventListener('DOMContentLoaded', function () {
 
@@ -29,10 +33,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
 // 模块一: 内容渲染函数
 function renderContent() {
-    fetch('js/data.json')
+    fetch(`${API_BASE_URL}/api/export`)
         .then(response => {
             if (!response.ok) {
-                throw new Error(`HTTP 错误！状态: ${response.status}. 无法加载 'js/data.json'`);
+                throw new Error(`HTTP 错误！状态: ${response.status}. 无法从后端 API 获取数据`);
             }
             return response.json();
         })

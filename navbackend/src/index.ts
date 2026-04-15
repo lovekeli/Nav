@@ -200,7 +200,21 @@ async function handleGetSearchConfigs(_request: Request, env: Env): Promise<Resp
       FROM search_configs sc
       ORDER BY sc.sort_order
     `).all();
-    return jsonResponse({ data: result.results || [] });
+
+    // 为每个配置获取引擎列表
+    const configsWithEngines = await Promise.all(
+      (result.results || []).map(async (config: any) => {
+        const engines = await env.DB.prepare(`
+          SELECT * FROM search_engines WHERE config_id = ? ORDER BY sort_order
+        `).bind(config.id).all();
+        return {
+          ...config,
+          engines: engines.results || []
+        };
+      })
+    );
+    
+    return jsonResponse({ data: configsWithEngines });
   } catch (e: any) {
     return jsonResponse({ error: e.message }, 500);
   }
@@ -453,6 +467,110 @@ async function handleExportData(_request: Request, env: Env): Promise<Response> 
   }
 }
 
+// ===== 数据导入（覆盖现有数据）=====
+async function handleImportData(request: Request, env: Env): Promise<Response> {
+  try {
+    const { pageData } = await request.json();
+    if (!pageData || !Array.isArray(pageData)) {
+      return jsonResponse({ error: '无效的 JSON 数据格式' }, 400);
+    }
+
+    // 禁用外键检查并清空数据
+    await env.DB.prepare('PRAGMA foreign_keys = OFF').run();
+    await env.DB.prepare('DELETE FROM links').run();
+    await env.DB.prepare('DELETE FROM groups').run();
+    await env.DB.prepare('DELETE FROM search_engines').run();
+    await env.DB.prepare('DELETE FROM search_configs').run();
+    await env.DB.prepare("DELETE FROM sqlite_sequence WHERE name IN ('links', 'groups', 'search_engines', 'search_configs')").run();
+
+    let importedCount = 0;
+    let searchConfigCount = 0;
+
+    // 先处理搜索配置
+    const searchItem = pageData.find(item => item.id === 'search');
+    if (searchItem && searchItem.searchConfig) {
+      for (let i = 0; i < searchItem.searchConfig.length; i++) {
+        const config = searchItem.searchConfig[i];
+        
+        // 插入搜索配置
+        const configResult = await env.DB.prepare(`
+          INSERT INTO search_configs (group_name, sort_order) VALUES (?, ?)
+        `).bind(config.groupName, i).run();
+        
+        const configId = configResult.meta?.last_row_id;
+        searchConfigCount++;
+
+        // 插入搜索引擎
+        if (config.items) {
+          for (let j = 0; j < config.items.length; j++) {
+            const engine = config.items[j];
+            await env.DB.prepare(`
+              INSERT INTO search_engines (config_id, engine_id, name, url, placeholder, sort_order)
+              VALUES (?, ?, ?, ?, ?, ?)
+            `).bind(configId, engine.id, engine.name, engine.url, engine.placeholder || '', j).run();
+          }
+        }
+      }
+    }
+
+    // 处理分组和链接
+    let currentGroupId = 0;
+    let topGroupOrder = 0;
+
+    for (const item of pageData) {
+      if (item.id === 'search') continue;
+
+      topGroupOrder++;
+      currentGroupId++;
+      importedCount++;
+
+      const parentGroupId = currentGroupId;
+
+      await env.DB.prepare(`INSERT INTO groups (id, title, icon, sort_order, parent_id) VALUES (?, ?, ?, ?, NULL)`)
+        .bind(parentGroupId, item.title, item.icon || 'ti ti-star', topGroupOrder)
+        .run();
+
+      if (item.children) {
+        for (let i = 0; i < item.children.length; i++) {
+          const child = item.children[i];
+          currentGroupId++;
+          importedCount++;
+
+          await env.DB.prepare(`INSERT INTO groups (id, title, icon, sort_order, parent_id) VALUES (?, ?, ?, ?, ?)`)
+            .bind(currentGroupId, child.title, child.icon || item.icon || 'ti ti-star', i + 1, parentGroupId)
+            .run();
+
+          if (child.items) {
+            for (let j = 0; j < child.items.length; j++) {
+              const link = child.items[j];
+              await env.DB.prepare(`INSERT INTO links (group_id, title, url, description, sort_order) VALUES (?, ?, ?, ?, ?)`)
+                .bind(currentGroupId, link.title, link.url, link.description || '', j)
+                .run();
+            }
+          }
+        }
+      } else if (item.items) {
+        for (let i = 0; i < item.items.length; i++) {
+          const link = item.items[i];
+          await env.DB.prepare(`INSERT INTO links (group_id, title, url, description, sort_order) VALUES (?, ?, ?, ?, ?)`)
+            .bind(parentGroupId, link.title, link.url, link.description || '', i)
+            .run();
+        }
+      }
+    }
+
+    await env.DB.prepare('PRAGMA foreign_keys = ON').run();
+    return jsonResponse({ 
+      message: '导入成功', 
+      count: importedCount + searchConfigCount,
+      groups: importedCount,
+      searchConfigs: searchConfigCount
+    });
+  } catch (e: any) {
+    return jsonResponse({ error: e.message }, 500);
+  }
+}
+
 // ===== 主路由 =====
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
@@ -470,21 +588,26 @@ export default {
       if (path === '/api/login' && request.method === 'POST') {
         return await handleLogin(request, env);
       }
-      
+
+      // 数据导出 - 公开访问（导航页面需要）
+      if (path === '/api/export' && request.method === 'GET') {
+        return await handleExportData(request, env);
+      }
+
       // 所有其他 API 需要认证
       const username = await authenticate(request, env);
       if (!username && path.startsWith('/api/')) {
         return jsonResponse({ error: '未授权' }, 401);
       }
-      
+
       // 概览
       if (path === '/api/overview' && request.method === 'GET') {
         return await handleOverview(request, env);
       }
       
-      // 数据导出
-      if (path === '/api/export' && request.method === 'GET') {
-        return await handleExportData(request, env);
+      // 数据导入
+      if (path === '/api/import' && request.method === 'POST') {
+        return await handleImportData(request, env);
       }
       
       // 分组管理

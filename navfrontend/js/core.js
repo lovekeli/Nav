@@ -17,7 +17,7 @@ const public_vars = {
 };
 
 // API 配置
-const API_BASE_URL = 'https://navbackend.1540956703.workers.dev';  // 后端 API 地址
+const API_BASE_URL = 'https://navbackend.onlylovekeli.com';  // 后端 API 地址
 // const API_BASE_URL = 'http://localhost:8787';  // 本地开发用
 
 // 主执行函数：等待 DOM 加载完毕后运行所有逻辑

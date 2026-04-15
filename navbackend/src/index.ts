@@ -142,7 +142,7 @@ async function handleGetGroups(_request: Request, env: Env): Promise<Response> {
       FROM groups g
       LEFT JOIN links l ON g.id = l.group_id
       GROUP BY g.id
-      ORDER BY g.sort_order
+      ORDER BY g.sort_order, CAST(g.id AS INTEGER)
     `).all();
     return jsonResponse({ data: result.results || [] });
   } catch (e: any) {
@@ -320,7 +320,7 @@ async function handleGetLinks(_request: Request, env: Env): Promise<Response> {
       SELECT l.*, g.title as group_title
       FROM links l
       LEFT JOIN groups g ON l.group_id = g.id
-      ORDER BY l.sort_order
+      ORDER BY CAST(l.group_id AS INTEGER), CAST(l.sort_order AS INTEGER), CAST(l.id AS INTEGER)
     `).all();
     return jsonResponse({ data: result.results || [] });
   } catch (e: any) {

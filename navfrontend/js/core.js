@@ -1137,28 +1137,4 @@ function setupFooterInfo() {
 
     // 控制台输出
     console.clear();
-
-    const titleStyle = 'font-size: 20px; font-weight: 600; color: rgb(244, 167, 89);';
-    const logoStyle = 'font-size: 16px; color: rgb(244, 167, 89);';
-    const infoStyle = 'color: rgb(30, 152, 255);';
-
-    const logoText = `
-==============================
-#   #    #   #   # #   # #####
-#   #   # #   # #  ##  # #
-# # #  #####   #   # # # #####
-## ##  #   #   #   #  ## #
-#   #  #   #   #   #   # #####
-==============================
-`;
-
-    const infoText = `
-版 本 号：v8.1.2
-更新日期：2025-11-06
-
-WayneのNav: https://nav.3301.qzz.io/
-Github:  https://github.com/Waynenet/Wayne-Nav
-`;
-
-    console.log(`%cWayneのNav %c${logoText} %c${infoText}`, titleStyle, logoStyle, infoStyle);
 }
